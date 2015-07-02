@@ -13,10 +13,10 @@ module.exports = function(grunt) {
 
         shell: {
             runApp: {
-                command: '/Applications/nwjs.app/Contents/MacOS/nwjs ./app'
+                command: require('nw').findpath() + ' ./app'
             },
             runAppDebug: {
-                command: '/Applications/nwjs.app/Contents/MacOS/nwjs ./app --remote-debugging-port=9222'
+                command: require('nw').findpath() + ' ./app --remote-debugging-port=9222'
             }
         }
 

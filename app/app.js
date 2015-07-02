@@ -1,7 +1,7 @@
 var TargetsCollection = require('./TargetsCollection');
 
 var app = angular.module('app', ['ngAnimate', 'ngMaterial', 'LocalStorageModule']);
-var discoverUrl = 'http://localhost:9222/json'
+var discoverUrl = 'http://localhost:9222/json';
 
 app.config(function (localStorageServiceProvider) {
   localStorageServiceProvider
@@ -34,12 +34,12 @@ app.directive('devtools', function() {
         replace: true,
         template: '<div class="devtools-wrapper"><iframe src="{{src}}"></iframe></div>',
         scope: {
-            'src': '@',
+            'src': '@'
         },
         link: function ($scope, element, attr) {
 
         }
-    }
+    };
 
 });
 
@@ -56,14 +56,15 @@ app.controller('home', function ($scope, $http, $location, localStorageService, 
 
     $scope.connect = function(target) {
 
+	var webSocketUrl = target.webSocketDebuggerUrl.replace(/(ws|wss)\:\/\//, '');
+	
         if(!target.devtoolsFrontendUrl) {
-            throw new Error("devtoolsFrontendUrl is missing");
+            $scope.devtoolsUrl = 'devtools/front_end/inspector.html?ws=' + webSocketUrl;
         }
-
-        var webSocketUrl = target.webSocketDebuggerUrl.replace(/(ws|wss)\:\/\//, '');
-
-        $scope.devtoolsUrl = 'devtools/front_end/inspector.html?ws=' + webSocketUrl + '&remoteFrontend=true';
-    }
+	else {
+	    $scope.devtoolsUrl = 'devtools/front_end/inspector.html?ws=' + webSocketUrl + '&remoteFrontend=true';
+	}
+    };
 
     $scope.setTargetFilter = function(filter) {
 
@@ -80,45 +81,54 @@ app.controller('home', function ($scope, $http, $location, localStorageService, 
                 $scope.filter = '^background_page$';
                 $scope.targetsFilterSelectedIndex = 2;
                 break;
+	    case 'webviews':
+                $scope.filter = '^webview$';
+                $scope.targetsFilterSelectedIndex = 3;
+                break;
         }
 
-        localStorageService.set('currentFilter', filter)
+        localStorageService.set('currentFilter', filter);
 
-    }
+    };
 
     $scope.discover = function() {
         var req = $http.get(discoverUrl);
         // var req = $http.get('/json.json');
-
+	
         req.success(function(data, status, headers, config) {
             $scope.targets.clear();
 
             data.forEach(function(item) {
+		if (!item.type){
+		    item.type = 'webview';
+		}
+		if (!item.id){
+		    item.id = 'item.appId';
+		}
                 $scope.targets.add(item.id, item);
             });
-
         });
 
         req.catch(function() {
 
         });
-    }
+    };
 
     $scope.showTargets = function() {
         $scope.devtoolsUrl = '';
-    }
+    };
 
     $scope.startDiscoveryChecks = function rediscover(){
         $timeout(function(){
-            $scope.discover()
-            rediscover()
-        }, $scope.REDISCOVERY_DELAY)
-    }
+            $scope.discover();
+            rediscover();
+        }, $scope.REDISCOVERY_DELAY);
+    };
 
     $scope.discover();
-    $scope.startDiscoveryChecks()
+    $scope.startDiscoveryChecks();
 
-    $scope.setTargetFilter(localStorageService.get('currentFilter') || 'pages')
+    $scope.setTargetFilter(localStorageService.get('currentFilter') || 'pages');
 
 });
 
@@ -147,7 +157,7 @@ function setupMenubars() {
     debugMenuBar.append(new gui.MenuItem({
         label: 'Connect',
         click: function() {
-            var url = prompt('Enter new discover url')
+            var url = prompt('Enter new discover url');
             discoverUrl = url;
         }
     }));
