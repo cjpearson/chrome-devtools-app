@@ -1,25 +1,36 @@
 {
   "name": "chrome-devtools",
-  "version": "0.0.1",
-  "description": "Chrome DevTools packaged as an app via node-webkit",
+  "version": "1.1.0",
+  "description": "Chrome DevTools packaged as an desktop app",
   "author": "Kenneth Auchenberg",
   "license": "MIT",
   "dependencies": {
-    "angular": "~1.3.2",
-    "bower": "~1.3.12",
-    "nw": "^0.12.0-alpha2"
+    "bower": "~1.3.12"
   },
   "devDependencies": {
-    "es6-promise": "~2.0.1",
-    "grunt": "~0.4.5",
-    "grunt-node-webkit-builder": "^1.0.0",
-    "grunt-shell": "~1.1.1",
-    "load-grunt-tasks": "~2.0.0"
+    "asar": "^0.7.2",
+    "electron-prebuilt": "^0.34.0",
+    "fs-jetpack": "^0.7.0",
+    "gulp": "^3.9.0",
+    "gulp-util": "^3.0.6",
+    "q": "^1.4.1",
+    "rollup": "^0.16.1",
+    "tree-kill": "^0.1.1",
+    "yargs": "^3.15.0"
+  },
+  "optionalDependencies": {
+    "appdmg": "^0.3.2",
+    "rcedit": "^0.3.0"
   },
   "main": "index.js",
   "scripts": {
-    "start": "nw app",
-    "install": "bower install"
+    "postinstall": "node ./tasks/app_npm_install",
+    "app-install": "node ./tasks/app_npm_install",
+    "build": "gulp build",
+    "release": "gulp release --env=production",
+    "start": "node ./tasks/start",
+    "test": "node ./tasks/start --env=test",
+    "postinstall": "bower cache clean && bower install"
   },
   "repository": {
     "type": "git",
