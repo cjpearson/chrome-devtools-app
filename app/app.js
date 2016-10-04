@@ -2,7 +2,8 @@ var ipc = require('ipc');
 
 var TargetsCollection = require('./lib/TargetsCollection');
 var app = angular.module('app', ['ngAnimate', 'ngMaterial', 'LocalStorageModule']);
-var discoverUrl = 'http://localhost:9222/json';
+var baseUrl = 'http://localhost:9222';
+var discoverUrl = baseUrl + '/json';
 
 app.config(function ($mdThemingProvider) {
   $mdThemingProvider.theme('default')
@@ -39,7 +40,7 @@ app.directive('devtools', function () {
   return {
     restrict: 'E',
     replace: true,
-    template: '<div class="devtools-wrapper"><iframe src="{{src}}"></iframe></div>',
+    template: '<div class="devtools-wrapper"><iframe src="{{src | trustAsResourceUrl}}"></iframe></div>',
     scope: {
       'src': '@'
     },
@@ -49,6 +50,12 @@ app.directive('devtools', function () {
   };
 
 });
+
+app.filter('trustAsResourceUrl', ['$sce', function($sce) {
+    return function(val) {
+        return $sce.trustAsResourceUrl(val);
+    };
+}]);
 
 app.controller('home', function ($scope, $http, $location, localStorageService, $timeout, $mdDialog, $window) {
 
@@ -62,10 +69,10 @@ app.controller('home', function ($scope, $http, $location, localStorageService, 
     var webSocketUrl = target.webSocketDebuggerUrl.replace(/(ws|wss)\:\/\//, '');
 
     if (!target.devtoolsFrontendUrl) {
-      $scope.devtoolsUrl = 'devtools/front_end/inspector.html?ws=' + webSocketUrl;
-    }
+	    $scope.devtoolsUrl = 'devtools/front_end/inspector.html?ws=' + webSocketUrl + '&remoteFrontend=true';
+    } 
     else {
-      $scope.devtoolsUrl = 'devtools/front_end/inspector.html?ws=' + webSocketUrl + '&remoteFrontend=true';
+	    $scope.devtoolsUrl = baseUrl + target.devtoolsFrontendUrl;
     }
   };
   $scope.setTargetFilter = function (filter) {
