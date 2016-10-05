@@ -1,7 +1,7 @@
-var ipc = require('ipc');
-
 var TargetsCollection = require('./lib/TargetsCollection');
-var app = angular.module('app', ['ngAnimate', 'ngMaterial', 'LocalStorageModule']);
+var ADBDeviceBrowser = require('./lib/ADBDeviceBrowser');
+
+var app = angular.module('app', ['ngAnimate', 'ngMaterial', 'LocalStorageModule', 'ng.group']);
 var baseUrl = 'http://localhost:9222';
 var discoverUrl = baseUrl + '/json';
 
@@ -59,11 +59,12 @@ app.filter('trustAsResourceUrl', ['$sce', function($sce) {
 
 app.controller('home', function ($scope, $http, $location, localStorageService, $timeout, $mdDialog, $window) {
 
-  $scope.REDISCOVERY_DELAY = 500; // Half a second
+  $scope.REDISCOVERY_DELAY = 5000;
   $scope.filter = '^page$';
   $scope.targetsFilterSelectedIndex = 1;
   $scope.devtoolsUrl = '';
   $scope.targets = new TargetsCollection();
+  $scope.adbDeviceBrowser = new ADBDeviceBrowser($scope.targets);
 
   $scope.connect = function (target) {
     var webSocketUrl = target.webSocketDebuggerUrl.replace(/(ws|wss)\:\/\//, '');
@@ -74,6 +75,7 @@ app.controller('home', function ($scope, $http, $location, localStorageService, 
     else {
 	    $scope.devtoolsUrl = baseUrl + target.devtoolsFrontendUrl;
     }
+    $scope.currentTarget = target;
   };
   $scope.setTargetFilter = function (filter) {
 
@@ -97,33 +99,30 @@ app.controller('home', function ($scope, $http, $location, localStorageService, 
     }
 
     localStorageService.set('currentFilter', filter)
-
   };
 
-  $scope.discover = function () {
+  $scope.discover = function() {
 
-    var req = $http.get(discoverUrl);
+        // $scope.targets.clear();
 
-    req.success(function (data, status, headers, config) {
-      $scope.targets.clear();
+        // Local chrome devices
+        $http.get('http://localhost:9222/json').success(function(data, status, headers, config) {
+            data.forEach(function(item) {
+                item.group = 'Chrome (desktop)';
+                if (!item.type) {
+                  item.type = 'webview';
+                }
+                if (!item.id) {
+                  item.id = 'item.appId';
+                }
+                $scope.targets.add(item.id, item);
+            });
+        });
 
-      data.forEach(function (item) {
-        if (!item.type) {
-          item.type = 'webview';
-        }
-        if (!item.id) {
-          item.id = 'item.appId';
-        }
+        // ADB / Android devices
+        //$scope.adbDeviceBrowser.discover();
 
-        $scope.targets.add(item.id, item);
-      });
-
-    });
-
-    req.catch(function () {
-
-    });
-  };
+    };
 
   $scope.showTargets = function () {
     $scope.devtoolsUrl = '';
