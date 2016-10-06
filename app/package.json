@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "fs-jetpack": "^0.7.0",
-    "adb-devtools-devices": "~0.0.2",
+    "adb-devtools-devices": "git://github.com/cjpearson/adb-devtools-devices",
     "request": "^2.53.0"
   }
 }

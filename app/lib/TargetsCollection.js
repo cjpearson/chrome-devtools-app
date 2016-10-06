@@ -8,19 +8,19 @@ TargetsCollection.prototype.add = function(id, metadata) {
     target.id = id;
 
     return this.collection.set(id, target);
-}
+};
 
 TargetsCollection.prototype.remove = function(key) {
     return this.collection.delete(key);
-}
+};
 
 TargetsCollection.prototype.has = function(key) {
     return this.collection.has(key);
-}
+};
 
 TargetsCollection.prototype.clear = function(){
     return this.collection.clear();
-}
+};
 
 TargetsCollection.prototype.toArray = function() {
 
@@ -32,6 +32,6 @@ TargetsCollection.prototype.toArray = function() {
 
     return targets;
 
-}
+};
 
 module.exports = TargetsCollection;

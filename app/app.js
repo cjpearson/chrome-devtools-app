@@ -69,11 +69,11 @@ app.controller('home', function ($scope, $http, $location, localStorageService, 
   $scope.connect = function (target) {
     var webSocketUrl = target.webSocketDebuggerUrl.replace(/(ws|wss)\:\/\//, '');
 
-    if (!target.devtoolsFrontendUrl) {
+    if (!target.devtoolsFrontendUrl || target.devtoolsFrontendUrl.indexOf("http") === 0) {
 	    $scope.devtoolsUrl = 'devtools/front_end/inspector.html?ws=' + webSocketUrl + '&remoteFrontend=true';
     } 
     else {
-	    $scope.devtoolsUrl = baseUrl + target.devtoolsFrontendUrl;
+      $scope.devtoolsUrl = baseUrl + target.devtoolsFrontendUrl;
     }
     $scope.currentTarget = target;
   };
@@ -120,8 +120,7 @@ app.controller('home', function ($scope, $http, $location, localStorageService, 
         });
 
         // ADB / Android devices
-        //$scope.adbDeviceBrowser.discover();
-
+        $scope.adbDeviceBrowser.discover();
     };
 
   $scope.showTargets = function () {

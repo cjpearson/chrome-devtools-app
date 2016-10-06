@@ -15,7 +15,7 @@ ADBDeviceBrowser.prototype.getDeviceTargets = function(device) {
         targets.forEach(function(target) {
 
             var target = {
-                group: device.device.properties['ro.product.display'] + ' (' + device.device.properties['ro.product.manufacturer'] + ' ' + device.device.properties['ro.product.model'] + ')',
+                group: device.device.properties['ro.product.model'] + ' (' + device.device.properties['ro.product.manufacturer'] + ')',
                 id: target.id,
                 title: target.title,
                 description: target.description,
@@ -33,7 +33,7 @@ ADBDeviceBrowser.prototype.getDeviceTargets = function(device) {
 
     }.bind(this));
 
-}
+};
 
 ADBDeviceBrowser.prototype.discover = function(service) {
 
